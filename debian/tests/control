@@ -1,0 +1,6 @@
+Tests: testsuite
+Depends: @, @builddeps@, build-essential
+Restrictions: build-needed allow-stderr
+
+Tests: acc
+Depends: @, dh-acc, exuberant-ctags

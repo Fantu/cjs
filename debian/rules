@@ -1,18 +1,19 @@
 #!/usr/bin/make -f
 
-include /usr/share/cdbs/1/rules/debhelper.mk
-include /usr/share/cdbs/1/class/autotools.mk
-include /usr/share/cdbs/1/rules/utils.mk
-include /usr/share/cdbs/1/rules/autoreconf.mk
-include /usr/share/gnome-pkg-tools/1/rules/uploaders.mk
-include /usr/share/gnome-pkg-tools/1/rules/gnome-get-source.mk
+export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 
-# Use recursive variables since this variable must not be expanded until 
-# files have been installed.
-LIBMOZJS = $(shell objdump -p debian/tmp/usr/lib/libcjs.so | awk '$$1=="NEEDED" && $$2~/^libmozjs/ { print $$2 }' | sed s/\\.so\\./-/ )
-DEB_DH_MAKESHLIBS_ARGS_libcjs0c = -Xusr/lib/cjs-1.0/ -V'libcjs0c (>= $(DEB_UPSTREAM_VERSION)), libcjs0-$(LIBMOZJS)' -- -c4
+%:
+	dh $@ --parallel --with=autoreconf,gir,gnome
 
-DEB_MAKE_CHECK_TARGET := check || true
+override_dh_gnome_clean:
+	dh_gnome_clean --no-control
 
-install/libcjs0c::
-	echo cjs:Provides=libcjs0-$(LIBMOZJS) >> debian/$(cdbs_curpkg).substvars
+override_dh_strip:
+	dh_strip --dbg-package=libcjs-dbg
+
+override_dh_install:
+	dh_install --list-missing
+
+override_dh_makeshlibs:
+	dh_makeshlibs -X/usr/lib/$(DEB_HOST_MULTIARCH)/cjs-1.0/

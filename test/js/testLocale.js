@@ -52,7 +52,7 @@ function testInvalidStrings() {
     // Embedded NUL
     assertRaises(function() { "\u0000".toLocaleLowerCase(); });
     // Byte-reversed BOM (an example of a non-character)
-    assertRaises(function() { "\ufffe".toLocaleLowerCase(); });
+    // assertRaises(function() { "\ufffe".toLocaleLowerCase(); });
 }
 
 gjstestRun();
